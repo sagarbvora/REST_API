@@ -40,7 +40,7 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Methods", "*");
     next();
 });
-require('./app/routes/note.routes.js')(app);
+require('./app')(app);
 // listen for requests
 app.listen(port, () => {
     console.log("Server is listening on port 8080");

@@ -8,7 +8,8 @@ const UsersSchema = mongoose.Schema({
     address: String,
     gender: String,
     email: String,
-    password: String
+    password: String,
+    isActive: Boolean
 }, {
     timestamps: true
 });

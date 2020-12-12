@@ -1,13 +1,16 @@
 const Users = require('./model');
+const bcrypt = require("bcryptjs");
 
 // Create and Save a new Note
 exports.create = (req, res) => {
     // Validate request
-    if(!req.body) {
+    if (!req.body) {
         return res.status(400).send({
             message: "Note content can not be empty"
         });
     }
+    //Encrypt password
+    req.body.password = bcrypt.hashSync(req.body.password, 8);
 
     // Create a Note
     // Save Note in the database
@@ -32,13 +35,20 @@ exports.findAll = (req, res) => {
         });
     });
 };
+//login data
 exports.login = (req, res) => {
-    Users.findOne({email: req.body.email, password: req.body.password})
+    Users.findOne({ email: req.body.email })
         .then(users => {
-            res.send(users);
+            console.log(users)
+            const isMatch =  bcrypt.compareSync(req.body.password, users.password); // true
+            if(isMatch){
+                return res.send(users);
+            }else {
+                return res.status(500).send({message: "User Field Are Not Correct"});
+            }
         }).catch(err => {
         res.status(500).send({
-            message: err.message || "Some error occurred while retrieving register_data."
+            message: err.message || "Some error occurred while retrieving login."
         });
     });
 };
@@ -72,15 +82,46 @@ exports.findUserData = (req, res) => {
         .then(users => {
             res.send(users);
         }).catch(err => {
-            res.status(500).send({
+        res.status(500).send({
             message: err.message || "Error retrieving note with id "
         });
     });
 };
+
+//active user or not
+exports.activeUsers = (req, res) => {
+    // Users.findOne({_id: req.params.id, isActive: req.body.isActive ===  "false"})
+    if (!req.body) {
+        return res.status(400).send({
+            message: "Note content can not be empty"
+        });
+    }
+
+    // Find note and update it with the request body
+    Users.findByIdAndUpdate({_id: req.params.id}, {isActive: req.body.isActive})
+        .then(users => {
+            if (!users) {
+                return res.status(404).send({
+                    message: "Note not found with id " + req.params.id
+                });
+            }
+            res.send(users);
+        }).catch(err => {
+        if (err.kind === 'ObjectId') {
+            return res.status(404).send({
+                message: "Note not found with id " + req.params.id
+            });
+        }
+        return res.status(500).send({
+            message: "Error updating note with id " + req.params.id
+        });
+    });
+};
+
 // Update a note identified by the noteId in the request
 exports.update = (req, res) => {
 // Validate Request
-    if(!req.body) {
+    if (!req.body) {
         return res.status(400).send({
             message: "Note content can not be empty"
         });
@@ -89,14 +130,14 @@ exports.update = (req, res) => {
     // Find note and update it with the request body
     Users.findByIdAndUpdate(req.params.id, req.body)
         .then(users => {
-            if(!users) {
+            if (!users) {
                 return res.status(404).send({
                     message: "Note not found with id " + req.params.id
                 });
             }
             res.send(users);
         }).catch(err => {
-        if(err.kind === 'ObjectId') {
+        if (err.kind === 'ObjectId') {
             return res.status(404).send({
                 message: "Note not found with id " + req.params.id
             });
@@ -111,8 +152,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     Users.findByIdAndRemove(req.params.id)
         .then(users => {
-
-            if(!users) {
+            if (!users) {
                 return res.status(404).send({
                     message: "Note not found with id " + req.params.id
                 });
@@ -120,7 +160,7 @@ exports.delete = (req, res) => {
             res.send({message: "Note deleted successfully!"});
 
         }).catch(err => {
-        if(err.kind === 'ObjectId' || err.name === 'NotFound') {
+        if (err.kind === 'ObjectId' || err.name === 'NotFound') {
             return res.status(404).send({
                 message: "Note not found with id " + req.params.id
             });

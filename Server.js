@@ -4,6 +4,7 @@ const dbConfig = require('./config/database.config.js');
 const mongoose = require('mongoose');
 const port = process.env.PORT || 8080;
 const path = require("path");
+const bcrypt = require("bcryptjs");
 
 
 // create express app

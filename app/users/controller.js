@@ -37,13 +37,13 @@ exports.findAll = (req, res) => {
 };
 //login data
 exports.login = (req, res) => {
-    Users.findOne({ email: req.body.email })
+    Users.findOne({email: req.body.email})
         .then(users => {
             console.log(users)
-            const isMatch =  bcrypt.compareSync(req.body.password, users.password); // true
-            if(isMatch){
+            const isMatch = bcrypt.compareSync(req.body.password, users.password); // true
+            if (isMatch) {
                 return res.send(users);
-            }else {
+            } else {
                 return res.status(500).send({message: "User Field Are Not Correct"});
             }
         }).catch(err => {
@@ -80,6 +80,7 @@ exports.login = (req, res) => {
 exports.findUserData = (req, res) => {
     Users.findOne({_id: req.params.id})
         .then(users => {
+            // bcrypt.compareSync(req.body.password, users.password);
             res.send(users);
         }).catch(err => {
         res.status(500).send({
@@ -90,7 +91,6 @@ exports.findUserData = (req, res) => {
 
 //active user or not
 exports.activeUsers = (req, res) => {
-    // Users.findOne({_id: req.params.id, isActive: req.body.isActive ===  "false"})
     if (!req.body) {
         return res.status(400).send({
             message: "Note content can not be empty"
@@ -120,6 +120,7 @@ exports.activeUsers = (req, res) => {
 
 // Update a note identified by the noteId in the request
 exports.update = (req, res) => {
+    req.body.password = bcrypt.hashSync(req.body.password, 8);
 // Validate Request
     if (!req.body) {
         return res.status(400).send({

@@ -8,9 +8,6 @@ router.post('/', controller.create);
 // Retrieve all controller
 router.get('/', controller.findAll);
 
-// Retrieve a single Note with noteId
-// router.get('/:id', controller.findOne);
-
 //find user details
 router.get('/:id', controller.findUserData);
 

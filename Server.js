@@ -6,7 +6,6 @@ const port = process.env.PORT || 8080;
 const path = require("path");
 const bcrypt = require("bcryptjs");
 
-
 // create express app
 const app = express();
 
@@ -42,6 +41,7 @@ app.use(function(req, res, next) {
     next();
 });
 require('./app')(app);
+
 // listen for requests
 app.listen(port, () => {
     console.log("Server is listening on port 8080");

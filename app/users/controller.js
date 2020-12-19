@@ -1,4 +1,3 @@
-
 const Users = require('./model');
 
 // Retrieve and return all register_data from the database.

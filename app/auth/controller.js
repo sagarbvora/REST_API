@@ -1,8 +1,6 @@
-require('dotenv').config();
 const Users = require('../users/model');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const config = require("../../config/database.config");
 
 // Create and Save a new Note
 exports.create = (req, res) => {
@@ -33,7 +31,7 @@ exports.login = (req, res) => {
         .then(users => {
             const isMatch = bcrypt.compareSync(req.body.password, users.password);
             if (isMatch) {
-                const token = jwt.sign({email: req.body.email}, process.env.SECRET_KEY);
+                const token = jwt.sign({email: req.body.email});
                 res.status(200).send({auth:true, token:token});
                 console.log(token)
                 return res.send(users);
